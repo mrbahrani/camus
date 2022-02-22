@@ -5,7 +5,7 @@
 #ifndef CAMUS_TOKEN_H
 #define CAMUS_TOKEN_H
 
-#define MAX_TOKEN_LENGTH
+#define MAX_TOKEN_LENGTH 64
 
 class Token {
 public:
