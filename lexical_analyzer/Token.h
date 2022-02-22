@@ -12,6 +12,7 @@ public:
     enum TokenType
     {
         object,
+        variable,
         predicate,
         period,
         question_mark,

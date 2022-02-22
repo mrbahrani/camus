@@ -1,0 +1,7 @@
+# This is a comment example
+# The sentences ending with period are
+nice(ali).
+# Variables consist of Uppercase letters and digits.
+if nice(X) then everybodyloves(X).
+
+everybodyloves(ali)?
