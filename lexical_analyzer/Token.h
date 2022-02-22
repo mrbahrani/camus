@@ -8,6 +8,7 @@
 #define MAX_TOKEN_LENGTH
 
 class Token {
+public:
     enum TokenType
     {
         object,
@@ -21,10 +22,16 @@ class Token {
         and_token,
         not_token,
         or_token,
+        comment,
         unknown
     };
+private:
+
     char* text;
     TokenType type;
+public:
+    Token(char* text, TokenType type);
+    ~Token();
 };
 
 
