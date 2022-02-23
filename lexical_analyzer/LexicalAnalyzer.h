@@ -12,9 +12,20 @@
 
 class LexicalAnalyzer {
 public:
+    enum LexicalFiniteMachineStates
+    {
+        start_state,
+        parenthesis_open_seen,
+        parenthesis_close_seen,
+        erroneous_character_seen,
+        comment_mode,
+        variable_potential,
+        object_or_keyword
+    };
+
     static LexicalAnalyzer* getInstance();
     void initialize(std::string script_file_name);
-    bool isInitialized();
+    bool isInitialized() const;
     Token* getTheNextToken();
 
 private:
@@ -25,6 +36,7 @@ private:
     ~LexicalAnalyzer();
     Token::TokenType getTokenTypeByText(const char* tokenText);
 
+    bool isWhitespace(char i);
 };
 
 

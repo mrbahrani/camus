@@ -25,7 +25,7 @@ void LexicalAnalyzer::initialize(std::string script_file_name) {
     }
 }
 
-bool LexicalAnalyzer::isInitialized() {
+bool LexicalAnalyzer::isInitialized() const {
     return initialized;
 }
 
@@ -33,14 +33,42 @@ Token *LexicalAnalyzer::getTheNextToken() {
     //ToDo add token size checker
     char *tokenText = new char[MAX_TOKEN_LENGTH];
     char *iter = tokenText;
-    do
+    bool tokenFound = false;
+    Token::TokenType type = Token::unknown;
+    while (!tokenFound)
     {
-        *iter++ = (char)fgetc(script_file);
-
-        //ToDo replace while condition with a function
-    } while(*iter != EOF);
-    *iter = '\0';
-    Token::TokenType type = getTokenTypeByText(tokenText);
+        *iter = (char)fgetc(script_file);
+        switch (*iter) {
+            case '(':
+                tokenFound = true;
+                return new Token(tokenText, Token::parenthesis_open);
+            case ')':
+                tokenFound = true;
+                return new Token(tokenText, Token::parenthesis_close);
+                break;
+            case EOF:
+                *iter = '\0';
+                type = getTokenTypeByText(tokenText);
+                return new Token(tokenText, type);
+            case ' ':
+            case '\t':
+            case '\n':
+                while (isWhitespace(*iter)) {
+                    fgetc(script_file);
+                }
+                if (*iter != EOF)
+                {
+                    fseek(script_file, -1, SEEK_CUR);
+                }
+                *iter = '\0';
+                type = getTokenTypeByText(tokenText);
+                return new Token(tokenText, type);
+            default:
+                tokenFound = true;
+                break;
+        }
+        iter++;
+    }
     return new Token(tokenText, type);
 }
 
@@ -55,5 +83,9 @@ LexicalAnalyzer::~LexicalAnalyzer() {
 
 Token::TokenType LexicalAnalyzer::getTokenTypeByText(const char* tokenText)
 {
+    return Token::unknown;
+}
 
+bool LexicalAnalyzer::isWhitespace(char ch) {
+    return ch == ' ' || ch == '\t' || ch == '\n';
 }
