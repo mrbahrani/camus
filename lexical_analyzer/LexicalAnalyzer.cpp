@@ -33,38 +33,54 @@ Token *LexicalAnalyzer::getTheNextToken() {
     //ToDo add token size checker
     char *tokenText = new char[MAX_TOKEN_LENGTH];
     char *iter = tokenText;
-    bool tokenFound = false;
+    LexicalFiniteMachineStates state = start_state;
     Token::TokenType type = Token::unknown;
-    while (!tokenFound)
+    while (state != final_state)
     {
         *iter = (char)fgetc(script_file);
-        switch (*iter) {
-            case '(':
-                tokenFound = true;
-                return new Token(tokenText, Token::parenthesis_open);
-            case ')':
-                tokenFound = true;
-                return new Token(tokenText, Token::parenthesis_close);
-                break;
-            case EOF:
-                *iter = '\0';
-                type = getTokenTypeByText(tokenText);
-                return new Token(tokenText, type);
-            case ' ':
-            case '\t':
-            case '\n':
-                while (isWhitespace(*iter)) {
-                    fgetc(script_file);
-                }
-                if (*iter != EOF)
+        switch (state)
+        {
+            case start_state:
+                if (*iter == '(')
                 {
-                    fseek(script_file, -1, SEEK_CUR);
+                    type = Token::parenthesis_open;
+                    ++iter;
+                    *iter='\0';
+                    state = final_state;
                 }
-                *iter = '\0';
-                type = getTokenTypeByText(tokenText);
-                return new Token(tokenText, type);
+                else if (*iter == ')')
+                {
+                    type = Token::parenthesis_close;
+                    ++iter;
+                    *iter='\0';
+                    state = final_state;
+                }
+                else if (*iter == '#')
+                {
+                    state = comment_mode;
+                }
+                else if (isUpper(*iter))
+                {
+                    state = variable_potential;
+                }
+                else if (isLower(*iter))
+                {
+                    state = object_or_keyword;
+                }
+                else
+                {
+                    state = erroneous_character_seen;
+                }
+                break;
+            case erroneous_character_seen:
+                break;
+            case variable_potential:
+                break;
+            case object_or_keyword:
+                break;
+            case comment_mode:
+                break;
             default:
-                tokenFound = true;
                 break;
         }
         iter++;
@@ -88,4 +104,12 @@ Token::TokenType LexicalAnalyzer::getTokenTypeByText(const char* tokenText)
 
 bool LexicalAnalyzer::isWhitespace(char ch) {
     return ch == ' ' || ch == '\t' || ch == '\n';
+}
+
+bool LexicalAnalyzer::isUpper(char ch) {
+    return ch > 64 && ch < 91;
+}
+
+bool LexicalAnalyzer::isLower(char ch) {
+    return ch > 96 && ch < 123;
 }

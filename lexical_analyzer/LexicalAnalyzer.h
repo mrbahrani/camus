@@ -15,12 +15,11 @@ public:
     enum LexicalFiniteMachineStates
     {
         start_state,
-        parenthesis_open_seen,
-        parenthesis_close_seen,
         erroneous_character_seen,
         comment_mode,
         variable_potential,
-        object_or_keyword
+        object_or_keyword,
+        final_state
     };
 
     static LexicalAnalyzer* getInstance();
@@ -37,6 +36,10 @@ private:
     Token::TokenType getTokenTypeByText(const char* tokenText);
 
     bool isWhitespace(char i);
+
+    bool isUpper(char ch);
+
+    bool isLower(char ch);
 };
 
 
